@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:appsonews/ui/screens/favorite_screen.dart';
 import 'package:appsonews/ui/screens/home_screen.dart';
+import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/widgets/bottom_navigation_widget.dart';
+import 'package:appsonews/utils/constants/images.dart';
 import 'package:flutter/material.dart';
 
 class PageViewHandler extends StatefulWidget {
@@ -60,18 +62,34 @@ class _PageViewHandlerState extends State<PageViewHandler> {
     return WillPopScope(
       onWillPop: handlePreviousPage,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.BACKGROUND,
+          elevation: 0,
+          leadingWidth: MediaQuery.of(context).size.width,
+          leading: Container(
+            margin: const EdgeInsets.only(left: 10),
+            child: Center(
+              child: Image.asset(
+                AppImages.LOGO_TEXT,
+              ),
+            ),
+          ),
+        ),
         extendBody: true,
         bottomNavigationBar: BottomNavigationWidget(
-          onItemTapped: (int) {
-            _onTabTapped(int);
+          onItemTapped: (int item) {
+            _onTabTapped(item);
           },
           index: _selectedIndex,
         ),
-        body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
-          children: tabScreen,
-          onPageChanged: _onScreenChanged,
-          controller: _pageController,
+        body: Container(
+          color: AppColors.BACKGROUND,
+          child: PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            children: tabScreen,
+            onPageChanged: _onScreenChanged,
+            controller: _pageController,
+          ),
         ),
       ),
     );

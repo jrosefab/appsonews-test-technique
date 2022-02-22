@@ -17,12 +17,12 @@ class BottomNavigationWidget extends StatefulWidget {
 class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 70,
       child: BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        backgroundColor: AppColors.BACKGROUND,
+        backgroundColor: AppColors.WHITE,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
         currentIndex: widget.index,
@@ -32,8 +32,8 @@ class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
         elevation: 0.0,
         type: BottomNavigationBarType.fixed,
         items: [
-          _bottomNavItem(Icons.gamepad, "Jouer"),
-          _bottomNavItem(Icons.gamepad, "Mes arènes"),
+          _bottomNavItem(Icons.home, "Actualités"),
+          _bottomNavItem(Icons.favorite, "Mes favoris"),
         ],
       ),
     );
@@ -51,26 +51,25 @@ class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
     );
   }
 
-  Container _iconAndLabel(IconData icon, String label, bool isActive) {
-    return Container(
-      width: double.infinity,
-      height: 69,
-      color: isActive ? AppColors.SECONDARY : Colors.transparent,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon),
-            SizedBox(
-              height: 5,
-            ),
-            TextWidget(
-              content: label,
-              color: isActive ? Colors.white : Colors.grey,
-              type: TextType.SMALL,
-            )
-          ],
-        ),
+  Widget _iconAndLabel(IconData icon, String label, bool isActive) {
+    Color color = isActive ? AppColors.SECONDARY : AppColors.DISABLED;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: color,
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          TextWidget(
+            content: label,
+            color: color,
+            type: TextType.SMALL,
+          )
+        ],
       ),
     );
   }
