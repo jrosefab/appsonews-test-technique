@@ -39,6 +39,7 @@ class TextWidget extends StatelessWidget {
     return Text(
       content,
       textAlign: align,
+      maxLines: 2,
       overflow:
           (overflow != null) ? TextOverflow.ellipsis : TextOverflow.visible,
       style: TextStyle(

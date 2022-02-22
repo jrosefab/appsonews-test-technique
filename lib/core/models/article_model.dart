@@ -1,26 +1,27 @@
 class Article {
   String? title;
   String? description;
-  String? url_to_image;
   String? url;
-  String? published_at;
+  String urlToImage;
+  String publishedAt;
   String? content;
 
   Article(
       {this.title,
+      required this.urlToImage,
+      required this.publishedAt,
       this.description,
-      this.url_to_image,
       this.url,
-      this.published_at,
       this.content});
 
   factory Article.fromMap(Map<String, dynamic> map) {
     return Article(
       title: map['title'] ?? "",
+      urlToImage: map['urlToImage'] ??
+          "https://eic-immobilier.fr/wp-content/themes/realestate-7/images/no-image.png",
+      publishedAt: map['publishedAt'],
       description: map['description'] ?? "",
-      url_to_image: map['urlToImage'] ?? "",
       url: map['url'] ?? "",
-      published_at: map['publishedAt'] ?? "",
       content: map['content'] ?? "",
     );
   }
