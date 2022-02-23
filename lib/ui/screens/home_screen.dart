@@ -51,21 +51,21 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _searchTextForm(),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _featuredNewsConsumer(),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Flexible(
             child: _newsListConsumer(context),
           ),
-          SizedBox(
+          const SizedBox(
             height: 100,
           ),
 
@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
             type: TextType.SMALL,
             color: AppColors.GRAY,
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _serchTextForm(),
@@ -113,8 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
         //    if (query.length >= 1) _searchGame(ref, query);
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-          prefixIcon: Icon(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+          prefixIcon: const Icon(
             Icons.search,
             size: 25,
             color: Colors.black38,
@@ -134,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           hintText: "Rechercher un évenement",
-          hintStyle: TextStyle(color: Colors.black26),
+          hintStyle: const TextStyle(color: Colors.black26),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -151,11 +152,11 @@ class _HomeScreenState extends State<HomeScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: TitleWidget(content: "À la une"),
           ),
-          Container(
+          SizedBox(
             height: 180,
             child: ListView.builder(
                 padding: EdgeInsets.zero,
@@ -202,13 +203,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }),
             if (loadMoreData)
-              Center(
+              const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.PRIMARY,
                 ),
               ),
             if (isEmpty)
-              TextWidget(
+              const TextWidget(
                 content: "Il n'y'a plus d'actualités",
                 type: TextType.MEDIUM,
                 align: TextAlign.center,

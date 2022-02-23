@@ -1,5 +1,7 @@
 class Article {
   String? title;
+  String? author;
+  String? source;
   String? description;
   String? url;
   String urlToImage;
@@ -8,6 +10,8 @@ class Article {
 
   Article(
       {this.title,
+      this.author,
+      this.source,
       required this.urlToImage,
       required this.publishedAt,
       this.description,
@@ -17,6 +21,8 @@ class Article {
   factory Article.fromMap(Map<String, dynamic> map) {
     return Article(
       title: map['title'] ?? "",
+      author: map['author'] ?? "",
+      source: map['source']['name'] ?? "",
       urlToImage: map['urlToImage'] ??
           "https://eic-immobilier.fr/wp-content/themes/realestate-7/images/no-image.png",
       publishedAt: map['publishedAt'],

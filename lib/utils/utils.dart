@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 class Utils {
+  static String convertDateTime(DateTime date) {
+    return DateFormat('dd/MM/yyyy').format(date).toString();
+  }
+
   static Future<Color?> setColorText(String imageUrl) async {
     late Color textColor;
     final imageColor =

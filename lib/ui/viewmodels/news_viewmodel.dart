@@ -12,6 +12,7 @@ class NewsViewModel with ChangeNotifier {
   LoadingType loadingType = LoadingType.IS_LOADING;
   List<ArticleViewModel> news = [];
   List<ArticleViewModel> featuredNews = [];
+  List<ArticleViewModel> interestedNews = [];
 
   void getNews(int page) async {
     List<Article> _news = await newsRepository.getNews(page);
@@ -40,7 +41,4 @@ class NewsViewModel with ChangeNotifier {
 
     notifyListeners();
   }
-
-  /// Removes all items from the cart.
-
 }

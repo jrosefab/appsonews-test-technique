@@ -11,6 +11,14 @@ class ArticleViewModel {
     return article.title;
   }
 
+  String? get author {
+    return article.author;
+  }
+
+  String? get source {
+    return article.source;
+  }
+
   String? get description {
     return article.description;
   }
@@ -27,9 +35,15 @@ class ArticleViewModel {
     return article.content;
   }
 
-  String get publishedAt {
+  String get publishedAgo {
     final dateTime =
         DateFormat('yyyy-MM-ddTHH:mm:ssZ').parse(article.publishedAt, true);
     return Utils.convertToTimeAgo(dateTime);
+  }
+
+  String get publishedAt {
+    final dateTime =
+        DateFormat('yyyy-MM-ddTHH:mm:ssZ').parse(article.publishedAt, true);
+    return Utils.convertDateTime(dateTime);
   }
 }

@@ -46,7 +46,7 @@ class ArticleTileWidget extends StatelessWidget {
                     Row(
                       children: [
                         _bottomInfo(
-                            article.publishedAt, CupertinoIcons.calendar),
+                            article.publishedAgo, CupertinoIcons.calendar),
                         SizedBox(
                           width: 10,
                         ),
