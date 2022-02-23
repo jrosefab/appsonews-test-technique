@@ -1,11 +1,9 @@
-import 'package:appsonews/core/models/article_model.dart';
 import 'package:appsonews/ui/styles/colors.dart';
-import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/ui/widgets/article_tile_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/ui/widgets/title_widget.dart';
-import 'package:appsonews/ui/widgets/trending_news_widget.dart';
+import 'package:appsonews/ui/widgets/featured_article_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,20 +16,71 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late NewsViewModel newsViewModel;
+  final TextEditingController _searchController = TextEditingController();
+  int page = 1;
+  late ScrollController _scrollController;
+  late String fromRoute;
+  FocusNode fieldFocusNode = FocusNode();
+  bool searchActive = false, isKeyBoardVisible = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController()..addListener(_scrollListener);
     newsViewModel = Provider.of<NewsViewModel>(context, listen: false);
-    newsViewModel.getNews();
+    newsViewModel.getNews(page);
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.atEdge) {
+      bool isTop = _scrollController.position.pixels == 0;
+      if (!isTop) {
+        setState(() {
+          //  page++;
+        });
+        // newsViewModel.getNews(page);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      controller: _scrollController,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          SizedBox(
+            height: 20,
+          ),
+          _searchTextForm(),
+          SizedBox(
+            height: 20,
+          ),
+          _featuredNews(),
+          SizedBox(
+            height: 20,
+          ),
+          Flexible(
+            child: _newsList(context),
+          ),
+          SizedBox(
+            height: 100,
+          ),
+
+          // ListView.builder(itemBuilder: itemBuilder)
+        ],
+      ),
+    );
+  }
+
+  Widget _searchTextForm() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           const TextWidget(
             content: "Rechercher",
             type: TextType.XXLARGE,
@@ -42,20 +91,60 @@ class _HomeScreenState extends State<HomeScreen> {
             type: TextType.SMALL,
             color: AppColors.GRAY,
           ),
-          _trendingNews(),
           SizedBox(
             height: 20,
           ),
-          Flexible(
-            child: _newsList(context),
-          ),
-          // ListView.builder(itemBuilder: itemBuilder)
+          _serchTextForm(),
         ],
       ),
     );
   }
 
-  Column _trendingNews() {
+  Widget _serchTextForm() {
+    return TextFormField(
+      controller: _searchController,
+      focusNode: fieldFocusNode,
+      onTap: () {
+        setState(() {
+          searchActive = true;
+        });
+      },
+      onChanged: (query) {
+        //    if (query.length >= 1) _searchGame(ref, query);
+      },
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+          prefixIcon: Icon(
+            Icons.search,
+            size: 25,
+            color: Colors.black38,
+          ),
+          suffixIcon: IconButton(
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+              searchActive = false;
+              _searchController.clear();
+            },
+            icon: Icon(
+              Icons.clear,
+              size: 20,
+              color: searchActive
+                  ? AppColors.SECONDARY
+                  : Colors.black.withOpacity(0.1),
+            ),
+          ),
+          hintText: "Rechercher un évenement",
+          hintStyle: TextStyle(color: Colors.black26),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(15.0),
+          )),
+    );
+  }
+
+  Column _featuredNews() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -63,36 +152,63 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.symmetric(horizontal: 20.0),
           child: TitleWidget(content: "À la une"),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              TrendingNewsWidget(),
-              TrendingNewsWidget(),
-            ],
-          ),
+        Container(
+          height: 180,
+          child: ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: newsViewModel.featuredNews.length,
+              itemBuilder: (BuildContext context, int index) {
+                final article = newsViewModel.featuredNews[index];
+                return FeaturedArticleWidget(article: article);
+              }),
         ),
       ],
     );
   }
 
   Widget _newsList(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const TitleWidget(content: "Recommandé pour vous"),
-          ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: newsViewModel.news.length,
-              itemBuilder: (BuildContext context, int index) {
-                final news = newsViewModel.news[index];
-                return ArticleTileWidget(news: news);
-              }),
-        ],
-      ),
-    );
+    return Consumer<NewsViewModel>(
+        builder: (BuildContext context, NewsViewModel viewModel, _) {
+      bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
+      bool loadMoreData = viewModel.loadingType == LoadingType.LOAD_MORE_DATA;
+      bool isEmpty = viewModel.loadingType == LoadingType.IS_EMPTY;
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TitleWidget(content: "Les actualités"),
+            ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: isLoading ? 6 : newsViewModel.news.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if (isLoading) {
+                    return const ShimmerArticleTileWidget();
+                  }
+                  final news = newsViewModel.news[index];
+                  return ArticleTileWidget(
+                    article: news,
+                  );
+                }),
+            if (loadMoreData)
+              Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.PRIMARY,
+                ),
+              ),
+            if (isEmpty)
+              TextWidget(
+                content: "Il n'y'a plus d'actualités",
+                type: TextType.MEDIUM,
+                align: TextAlign.center,
+              )
+          ],
+        ),
+      );
+    });
   }
 }
