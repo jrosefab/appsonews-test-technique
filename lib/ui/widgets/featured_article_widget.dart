@@ -1,5 +1,6 @@
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
+import 'package:appsonews/ui/widgets/shimmer_loading_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -24,17 +25,11 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
     setColorText();
   }
 
-  Future<Color?> setColorText() async {
-    final imageColor = await Utils.getImagePalette(
-        Image.network(widget.article.imageUrl).image);
-    if (imageColor != null) {
-      Color textColor =
-          imageColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
-      setState(() {
-        color = textColor;
-      });
-    }
-    return Utils.getImagePalette(Image.network(widget.article.imageUrl).image);
+  void setColorText() async {
+    final _color = await Utils.setColorText(widget.article.imageUrl);
+    setState(() {
+      color = _color;
+    });
   }
 
   @override
@@ -85,7 +80,9 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
             child: TextWidget(
               content: widget.article.title ?? "",
               type: TextType.MEDIUM,
+              maxLines: 2,
               color: color,
+              overflow: true,
               isBold: true,
             ),
           ),
@@ -107,5 +104,22 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
         ],
       ),
     );
+  }
+}
+
+class ShimmerFeaturedArticleWidget extends StatelessWidget {
+  const ShimmerFeaturedArticleWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ShimmerLoading(
+        child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10),
+            height: MediaQuery.of(context).size.height * 0.25,
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+              color: AppColors.DISABLED,
+              borderRadius: BorderRadius.circular(20),
+            )));
   }
 }

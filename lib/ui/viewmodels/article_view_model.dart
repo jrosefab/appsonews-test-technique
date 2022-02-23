@@ -1,4 +1,5 @@
 import 'package:appsonews/core/models/article_model.dart';
+import 'package:appsonews/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 class ArticleViewModel {
@@ -29,6 +30,6 @@ class ArticleViewModel {
   String get publishedAt {
     final dateTime =
         DateFormat('yyyy-MM-ddTHH:mm:ssZ').parse(article.publishedAt, true);
-    return DateFormat.yMMMMEEEEd('fr-Fr').format(dateTime).toString();
+    return Utils.convertToTimeAgo(dateTime);
   }
 }

@@ -17,6 +17,7 @@ class TextWidget extends StatelessWidget {
   final Color? color;
   final bool? isBold;
   final bool? overflow;
+  final int? maxLines;
   final TextAlign? align;
   final TextDecoration? decoration;
   final List<Shadow>? shadow;
@@ -27,6 +28,7 @@ class TextWidget extends StatelessWidget {
       required this.type,
       this.color,
       this.isBold,
+      this.maxLines,
       this.overflow,
       this.shadow,
       this.align,
@@ -39,7 +41,7 @@ class TextWidget extends StatelessWidget {
     return Text(
       content,
       textAlign: align,
-      maxLines: 2,
+      maxLines: maxLines,
       overflow:
           (overflow != null) ? TextOverflow.ellipsis : TextOverflow.visible,
       style: TextStyle(

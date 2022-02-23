@@ -5,9 +5,16 @@ import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/constants/routes.dart';
 import 'package:flutter/material.dart';
 
+class ScreenArgument {
+  final dynamic content;
+  ScreenArgument({required this.content});
+}
+
 class MyRouter {
   // generated routes
   static Route<dynamic>? generateRoute(RouteSettings settings) {
+    final args = settings.arguments as ScreenArgument;
+
     switch (settings.name) {
       case AppRoutes.HOME_ROUTE:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
@@ -18,7 +25,7 @@ class MyRouter {
 
       //user
       case AppRoutes.ARTICLE_ROUTE:
-        return MaterialPageRoute(builder: (_) => const ArticleScreen());
+        return MaterialPageRoute(builder: (_) => ArticleScreen(argument: args));
 
       default:
         return MaterialPageRoute(

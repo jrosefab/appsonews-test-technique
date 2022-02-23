@@ -21,13 +21,13 @@ class NewsViewModel with ChangeNotifier {
           _news.map((article) => ArticleViewModel(article: article)).toList());
       loadingType = LoadingType.LOAD_MORE_DATA;
     } else {
+      featuredNews.clear();
+
       news =
           _news.map((article) => ArticleViewModel(article: article)).toList();
 
       for (int i = 0; i < 3; i++) {
-        if (featuredNews.isEmpty) {
-          featuredNews.add(news[i]);
-        }
+        featuredNews.add(news[i]);
         news.removeAt(i);
       }
     }

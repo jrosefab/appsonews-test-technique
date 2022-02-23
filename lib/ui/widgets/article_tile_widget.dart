@@ -1,8 +1,11 @@
+import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/widgets/shimmer_loading_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/constants/images.dart';
+import 'package:appsonews/utils/constants/routes.dart';
+import 'package:appsonews/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +20,10 @@ class ArticleTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.pushNamed(context, AppRoutes.ARTICLE_ROUTE,
+            arguments: ScreenArgument(content: article));
+      },
       child: Container(
         height: 110,
         decoration: BoxDecoration(
@@ -39,7 +45,8 @@ class ArticleTileWidget extends StatelessWidget {
                     _titleAndFavorite(),
                     Row(
                       children: [
-                        _bottomInfo("Il y'a 15mn", CupertinoIcons.calendar),
+                        _bottomInfo(
+                            article.publishedAt, CupertinoIcons.calendar),
                         SizedBox(
                           width: 10,
                         ),
@@ -63,6 +70,7 @@ class ArticleTileWidget extends StatelessWidget {
         Expanded(
             child: TextWidget(
           content: article.title ?? "",
+          maxLines: 2,
           type: TextType.MEDIUM,
           isBold: true,
           overflow: true,

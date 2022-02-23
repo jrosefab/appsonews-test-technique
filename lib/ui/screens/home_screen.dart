@@ -58,12 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             height: 20,
           ),
-          _featuredNews(),
+          _featuredNewsConsumer(),
           SizedBox(
             height: 20,
           ),
           Flexible(
-            child: _newsList(context),
+            child: _newsListConsumer(context),
           ),
           SizedBox(
             height: 100,
@@ -144,31 +144,38 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Column _featuredNews() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: TitleWidget(content: "À la une"),
-        ),
-        Container(
-          height: 180,
-          child: ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: newsViewModel.featuredNews.length,
-              itemBuilder: (BuildContext context, int index) {
-                final article = newsViewModel.featuredNews[index];
-                return FeaturedArticleWidget(article: article);
-              }),
-        ),
-      ],
-    );
+  Widget _featuredNewsConsumer() {
+    return Consumer(
+        builder: (BuildContext context, NewsViewModel viewModel, _) {
+      bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
+            child: TitleWidget(content: "À la une"),
+          ),
+          Container(
+            height: 180,
+            child: ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: isLoading ? 3 : newsViewModel.featuredNews.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if (isLoading) {
+                    return const ShimmerFeaturedArticleWidget();
+                  }
+                  final article = newsViewModel.featuredNews[index];
+                  return FeaturedArticleWidget(article: article);
+                }),
+          ),
+        ],
+      );
+    });
   }
 
-  Widget _newsList(BuildContext context) {
+  Widget _newsListConsumer(BuildContext context) {
     return Consumer<NewsViewModel>(
         builder: (BuildContext context, NewsViewModel viewModel, _) {
       bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
