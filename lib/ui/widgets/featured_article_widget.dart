@@ -28,7 +28,7 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
   }
 
   void setColorText() async {
-    final _color = await Utils.setColorText(widget.article.imageUrl);
+    final _color = await Utils.setColorText(widget.article.urlToImage);
     setState(() {
       color = _color;
     });
@@ -43,7 +43,8 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           image: DecorationImage(
-              image: NetworkImage(widget.article.imageUrl), fit: BoxFit.cover)),
+              image: NetworkImage(widget.article.urlToImage),
+              fit: BoxFit.cover)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -62,8 +63,8 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
 
   Container _favorite() {
     return Container(
-      margin: EdgeInsets.all(10),
-      child: Icon(
+      margin: const EdgeInsets.all(10),
+      child: const Icon(
         Icons.favorite,
         color: AppColors.DISABLED,
       ),

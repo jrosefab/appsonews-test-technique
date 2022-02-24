@@ -33,7 +33,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   }
 
   void setColorText() async {
-    final _color = await Utils.setColorText(article.imageUrl);
+    final _color = await Utils.setColorText(article.urlToImage);
     setState(() {
       color = _color;
     });
@@ -86,7 +86,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 50),
       decoration: BoxDecoration(
         image: DecorationImage(
-            image: NetworkImage(article.imageUrl), fit: BoxFit.cover),
+            image: NetworkImage(article.urlToImage), fit: BoxFit.cover),
       ),
       child: Center(
         child: TextWidget(

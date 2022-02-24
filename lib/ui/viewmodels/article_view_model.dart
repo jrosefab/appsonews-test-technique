@@ -23,7 +23,7 @@ class ArticleViewModel {
     return article.description;
   }
 
-  String get imageUrl {
+  String get urlToImage {
     return article.urlToImage;
   }
 

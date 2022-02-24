@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:appsonews/core/models/article_model.dart';
+import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
@@ -9,7 +13,7 @@ import 'package:appsonews/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ArticleTileWidget extends StatelessWidget {
+class ArticleTileWidget extends StatefulWidget {
   const ArticleTileWidget({
     Key? key,
     required this.article,
@@ -18,11 +22,45 @@ class ArticleTileWidget extends StatelessWidget {
   final ArticleViewModel article;
 
   @override
+  State<ArticleTileWidget> createState() => _ArticleTileWidgetState();
+}
+
+class _ArticleTileWidgetState extends State<ArticleTileWidget> {
+  bool isSelected = false;
+
+  Future<void> saveToFavorite() async {
+    setState(() {
+      isSelected = !isSelected;
+    });
+
+    if (isSelected) {
+      final pref = SharedPrefService();
+
+      final favoriteArticle = Article(
+        title: widget.article.title ?? "",
+        author: widget.article.author ?? "",
+        source: widget.article.source ?? "",
+        urlToImage: widget.article.urlToImage,
+        publishedAt: widget.article.publishedAt,
+        description: widget.article.description ?? "",
+        url: widget.article.url ?? "",
+        content: widget.article.content ?? "",
+      ).toJson();
+
+      final encodedArticle = json.encode(favoriteArticle);
+      final currentFavorites = await pref.getString("favorites");
+      print(currentFavorites);
+      //pref.setString("favorites", encodedArticle);
+      print(encodedArticle);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, AppRoutes.ARTICLE_ROUTE,
-            arguments: ScreenArgument(content: article));
+            arguments: ScreenArgument(content: widget.article));
       },
       child: Container(
         height: 110,
@@ -45,13 +83,22 @@ class ArticleTileWidget extends StatelessWidget {
                     _titleAndFavorite(),
                     Row(
                       children: [
-                        _bottomInfo(
-                            article.publishedAgo, CupertinoIcons.calendar),
-                        SizedBox(
-                          width: 10,
+                        TextWidget(
+                          content: widget.article.publishedAgo,
+                          type: TextType.XSMALL,
+                          color: Colors.grey,
+                          overflow: true,
                         ),
-                        _bottomInfo("Par CNews",
-                            Icons.drive_file_rename_outline_rounded)
+                        SizedBox(
+                          width: 5,
+                        ),
+                        if (widget.article.author != null)
+                          TextWidget(
+                            content: "|  ${widget.article.author} ",
+                            type: TextType.XSMALL,
+                            color: Colors.grey,
+                            overflow: true,
+                          ),
                       ],
                     )
                   ],
@@ -69,7 +116,7 @@ class ArticleTileWidget extends StatelessWidget {
       children: [
         Expanded(
             child: TextWidget(
-          content: article.title ?? "",
+          content: widget.article.title ?? "",
           maxLines: 2,
           type: TextType.MEDIUM,
           isBold: true,
@@ -78,12 +125,15 @@ class ArticleTileWidget extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        Container(
-            margin: const EdgeInsets.only(right: 5),
-            child: const Icon(
-              Icons.favorite,
-              color: AppColors.SECONDARY,
-            ))
+        GestureDetector(
+          onTap: saveToFavorite,
+          child: Container(
+              margin: const EdgeInsets.only(right: 5),
+              child: Icon(
+                Icons.favorite,
+                color: isSelected ? AppColors.SECONDARY : AppColors.DISABLED,
+              )),
+        )
       ],
     );
   }
@@ -93,7 +143,7 @@ class ArticleTileWidget extends StatelessWidget {
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
       child: FadeInImage(
-        image: NetworkImage(article.imageUrl),
+        image: NetworkImage(widget.article.urlToImage),
         placeholder: const AssetImage(
           AppImages.NOT_FOUND,
         ),
@@ -127,6 +177,7 @@ class ArticleTileWidget extends StatelessWidget {
           content: content,
           type: TextType.XSMALL,
           color: Colors.grey,
+          overflow: true,
         ),
       ],
     );
