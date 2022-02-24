@@ -1,11 +1,14 @@
 import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
+import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
+import 'package:appsonews/ui/widgets/favorite_icon_widget.dart';
 import 'package:appsonews/ui/widgets/shimmer_loading_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/constants/routes.dart';
 import 'package:appsonews/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FeaturedArticleWidget extends StatefulWidget {
   const FeaturedArticleWidget({
@@ -20,6 +23,7 @@ class FeaturedArticleWidget extends StatefulWidget {
 
 class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
   Color? color;
+  bool isSelected = false;
 
   @override
   void initState() {
@@ -64,9 +68,8 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
   Container _favorite() {
     return Container(
       margin: const EdgeInsets.all(10),
-      child: const Icon(
-        Icons.favorite,
-        color: AppColors.DISABLED,
+      child: FavoriteIconWidget(
+        article: widget.article,
       ),
     );
   }

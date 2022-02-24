@@ -7,6 +7,7 @@ import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
+import 'package:appsonews/ui/widgets/favorite_icon_widget.dart';
 import 'package:appsonews/ui/widgets/shimmer_loading_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/constants/images.dart';
@@ -31,20 +32,6 @@ class ArticleTileWidget extends StatefulWidget {
 
 class _ArticleTileWidgetState extends State<ArticleTileWidget> {
   bool isSelected = false;
-
-  void saveToFavorite() async {
-    setState(() {
-      isSelected = !isSelected;
-    });
-
-    final sharedPrefViewModel =
-        Provider.of<SharedPrefViewModel>(context, listen: false);
-
-    final favoriteAction =
-        await sharedPrefViewModel.updateFavorite(widget.article);
-
-    Utils.showSnackBar(context, favoriteAction);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,27 +103,11 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget> {
         const SizedBox(
           width: 10,
         ),
-        _favoriteConsumer(),
+        FavoriteIconWidget(
+          article: widget.article,
+        )
       ],
     );
-  }
-
-  Widget _favoriteConsumer() {
-    return Consumer<SharedPrefViewModel>(
-        builder: (BuildContext context, SharedPrefViewModel viewModel, _) {
-      final contain = viewModel.favoriteNews
-          .where((element) => element.title == widget.article.title);
-      return GestureDetector(
-        onTap: saveToFavorite,
-        child: Container(
-            margin: const EdgeInsets.only(right: 5),
-            child: Icon(
-              Icons.favorite,
-              color:
-                  contain.isNotEmpty ? AppColors.SECONDARY : AppColors.DISABLED,
-            )),
-      );
-    });
   }
 
   ClipRRect _image() {

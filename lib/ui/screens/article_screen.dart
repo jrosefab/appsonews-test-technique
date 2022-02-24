@@ -1,6 +1,8 @@
+import 'package:appsonews/core/services/dynamic_links_service.dart';
 import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
+import 'package:appsonews/ui/widgets/favorite_icon_widget.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:appsonews/ui/widgets/text_widget.dart';
@@ -29,7 +31,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
   }
 
   Future<void> shareArticle() async {
-    Share.share("Découvre sur AppsoNews : ${article.title}");
+    final dynamicLinksService = DynamicLinkService();
+    final url = await dynamicLinksService.buildLink("bonjour");
+    Share.share("Découvre sur AppsoNews : $url");
   }
 
   void setColorText() async {
@@ -110,7 +114,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
             const SizedBox(
               width: 5,
             ),
-            _addToFavorite()
+            FavoriteIconWidget(
+              article: article,
+              size: 40,
+            ),
           ],
         ),
         const SizedBox(
@@ -180,30 +187,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
             content: article.publishedAt,
             type: TextType.SMALL,
             color: Colors.blueAccent,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container _addToFavorite() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-          color: AppColors.DISABLED, borderRadius: BorderRadius.circular(100)),
-      child: Row(
-        children: const [
-          Icon(
-            Icons.favorite,
-            color: Colors.grey,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          TextWidget(
-            content: "Ajouter aux favoris",
-            type: TextType.SMALL,
-            color: Colors.grey,
           ),
         ],
       ),
