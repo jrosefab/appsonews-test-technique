@@ -5,6 +5,8 @@ import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
+import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
+import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:appsonews/ui/widgets/shimmer_loading_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/constants/images.dart';
@@ -12,6 +14,8 @@ import 'package:appsonews/utils/constants/routes.dart';
 import 'package:appsonews/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ArticleTileWidget extends StatefulWidget {
   const ArticleTileWidget({
@@ -28,31 +32,18 @@ class ArticleTileWidget extends StatefulWidget {
 class _ArticleTileWidgetState extends State<ArticleTileWidget> {
   bool isSelected = false;
 
-  Future<void> saveToFavorite() async {
+  void saveToFavorite() async {
     setState(() {
       isSelected = !isSelected;
     });
 
-    if (isSelected) {
-      final pref = SharedPrefService();
+    final sharedPrefViewModel =
+        Provider.of<SharedPrefViewModel>(context, listen: false);
 
-      final favoriteArticle = Article(
-        title: widget.article.title ?? "",
-        author: widget.article.author ?? "",
-        source: widget.article.source ?? "",
-        urlToImage: widget.article.urlToImage,
-        publishedAt: widget.article.publishedAt,
-        description: widget.article.description ?? "",
-        url: widget.article.url ?? "",
-        content: widget.article.content ?? "",
-      ).toJson();
+    final favoriteAction =
+        await sharedPrefViewModel.updateFavorite(widget.article);
 
-      final encodedArticle = json.encode(favoriteArticle);
-      final currentFavorites = await pref.getString("favorites");
-      print(currentFavorites);
-      //pref.setString("favorites", encodedArticle);
-      print(encodedArticle);
-    }
+    Utils.showSnackBar(context, favoriteAction);
   }
 
   @override
@@ -84,12 +75,12 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget> {
                     Row(
                       children: [
                         TextWidget(
-                          content: widget.article.publishedAgo,
+                          content: "${widget.article.publishedAt} ",
                           type: TextType.XSMALL,
                           color: Colors.grey,
                           overflow: true,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         if (widget.article.author != null)
@@ -125,22 +116,32 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget> {
         const SizedBox(
           width: 10,
         ),
-        GestureDetector(
-          onTap: saveToFavorite,
-          child: Container(
-              margin: const EdgeInsets.only(right: 5),
-              child: Icon(
-                Icons.favorite,
-                color: isSelected ? AppColors.SECONDARY : AppColors.DISABLED,
-              )),
-        )
+        _favoriteConsumer(),
       ],
     );
   }
 
+  Widget _favoriteConsumer() {
+    return Consumer<SharedPrefViewModel>(
+        builder: (BuildContext context, SharedPrefViewModel viewModel, _) {
+      final contain = viewModel.favoriteNews
+          .where((element) => element.title == widget.article.title);
+      return GestureDetector(
+        onTap: saveToFavorite,
+        child: Container(
+            margin: const EdgeInsets.only(right: 5),
+            child: Icon(
+              Icons.favorite,
+              color:
+                  contain.isNotEmpty ? AppColors.SECONDARY : AppColors.DISABLED,
+            )),
+      );
+    });
+  }
+
   ClipRRect _image() {
     return ClipRRect(
-      borderRadius: BorderRadius.only(
+      borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
       child: FadeInImage(
         image: NetworkImage(widget.article.urlToImage),
@@ -159,27 +160,6 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget> {
         height: 110,
         width: 110,
       ),
-    );
-  }
-
-  Widget _bottomInfo(String content, IconData icon) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Colors.grey,
-        ),
-        SizedBox(
-          width: 5,
-        ),
-        TextWidget(
-          content: content,
-          type: TextType.XSMALL,
-          color: Colors.grey,
-          overflow: true,
-        ),
-      ],
     );
   }
 }

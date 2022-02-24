@@ -125,8 +125,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
           height: 30,
         ),
         if (article.source != null)
-          if (article.source!.isNotEmpty)
-            _contentInfo("Source", article.source!),
+          _contentInfo("Source", article.source!.name!),
         const SizedBox(
           height: 30,
         ),

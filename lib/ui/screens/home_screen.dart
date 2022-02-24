@@ -1,4 +1,5 @@
 import 'package:appsonews/ui/styles/colors.dart';
+import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/ui/widgets/article_tile_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
@@ -14,7 +15,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   late NewsViewModel newsViewModel;
   final TextEditingController _searchController = TextEditingController();
   int page = 1;
@@ -30,6 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
     newsViewModel = Provider.of<NewsViewModel>(context, listen: false);
     newsViewModel.getNews(page);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   void _scrollListener() {
     if (_scrollController.position.atEdge) {
@@ -197,9 +202,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (isLoading) {
                     return const ShimmerArticleTileWidget();
                   }
-                  final news = newsViewModel.news[index];
+                  final article = newsViewModel.news[index];
                   return ArticleTileWidget(
-                    article: news,
+                    article: article,
                   );
                 }),
             if (loadMoreData)

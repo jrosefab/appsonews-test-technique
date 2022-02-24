@@ -1,4 +1,5 @@
 import 'package:appsonews/ui/router.dart';
+import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:appsonews/ui/screens/page_view_hanlder.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
@@ -19,6 +20,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => NewsViewModel()),
+        ChangeNotifierProvider(create: (context) => SharedPrefViewModel()),
         // Provider(create: (context) => SomeOtherClass()),
       ],
       child: const MyApp(),

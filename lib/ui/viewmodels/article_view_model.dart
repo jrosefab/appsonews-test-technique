@@ -15,7 +15,7 @@ class ArticleViewModel {
     return article.author;
   }
 
-  String? get source {
+  Source? get source {
     return article.source;
   }
 

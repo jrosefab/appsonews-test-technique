@@ -7,6 +7,15 @@ class Utils {
     return DateFormat('dd/MM/yyyy').format(date).toString();
   }
 
+  static showSnackBar(BuildContext context, String message) {
+    final snackBar = SnackBar(
+      duration: const Duration(milliseconds: 500),
+      content: Text(message),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   static Future<Color?> setColorText(String imageUrl) async {
     late Color textColor;
     final imageColor =

@@ -1,7 +1,9 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:appsonews/core/models/article_model.dart';
 import 'package:appsonews/core/repositories/news_repository.dart';
+import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +14,7 @@ class NewsViewModel with ChangeNotifier {
   LoadingType loadingType = LoadingType.IS_LOADING;
   List<ArticleViewModel> news = [];
   List<ArticleViewModel> featuredNews = [];
-  List<ArticleViewModel> interestedNews = [];
+  List<ArticleViewModel> favoriteNews = [];
 
   void getNews(int page) async {
     List<Article> _news = await newsRepository.getNews(page);
