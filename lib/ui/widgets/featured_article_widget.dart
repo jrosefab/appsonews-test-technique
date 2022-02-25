@@ -64,7 +64,7 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
     );
   }
 
-  Container _favorite() {
+  Widget _favorite() {
     return Container(
       margin: const EdgeInsets.all(10),
       child: FavoriteIconWidget(

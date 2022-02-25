@@ -104,6 +104,17 @@ class _PageViewHandlerState extends State<PageViewHandler> {
     }
   }
 
+  void _onScreenChanged(int page) {
+    setState(() {
+      _previousIndex = _selectedIndex;
+      _selectedIndex = page;
+    });
+  }
+
+  void _onTabTapped(int index) {
+    _pageController.jumpToPage(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -188,16 +199,5 @@ class _PageViewHandlerState extends State<PageViewHandler> {
         ),
       );
     });
-  }
-
-  void _onScreenChanged(int page) {
-    setState(() {
-      _previousIndex = _selectedIndex;
-      _selectedIndex = page;
-    });
-  }
-
-  void _onTabTapped(int index) {
-    _pageController.jumpToPage(index);
   }
 }

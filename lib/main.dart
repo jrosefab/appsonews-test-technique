@@ -1,11 +1,6 @@
-import 'dart:convert';
-
-import 'package:appsonews/core/models/article_model.dart';
 import 'package:appsonews/core/services/dynamic_links_service.dart';
 import 'package:appsonews/ui/router.dart';
-import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:appsonews/ui/screens/page_view_hanlder.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/utils/constants/routes.dart';
@@ -27,7 +22,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => NewsViewModel()),
         ChangeNotifierProvider(create: (context) => SharedPrefViewModel()),
-        // Provider(create: (context) => SomeOtherClass()),
       ],
       child: const MyApp(),
     ),

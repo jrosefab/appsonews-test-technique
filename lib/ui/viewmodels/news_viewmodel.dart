@@ -58,7 +58,6 @@ class NewsViewModel with ChangeNotifier {
       loadingType = LoadingType.HAS_ERROR;
     });
 
-    print(_findedNews);
     if (_findedNews != null) {
       findedNews = _findedNews
           .map((article) => convertArticleToViewModel(article))

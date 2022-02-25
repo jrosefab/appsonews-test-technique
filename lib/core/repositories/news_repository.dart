@@ -1,5 +1,5 @@
 import 'package:appsonews/core/models/article_model.dart';
-import 'package:appsonews/utils/constants/environnment.dart';
+import 'package:appsonews/utils/constants/environment.dart';
 import 'package:appsonews/utils/constants/strings.dart';
 import 'package:appsonews/utils/constants/url.dart';
 import 'package:dio/dio.dart';
