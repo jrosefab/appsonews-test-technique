@@ -2,6 +2,7 @@ import 'package:appsonews/ui/screens/article_screen.dart';
 import 'package:appsonews/ui/screens/favorite_screen.dart';
 import 'package:appsonews/ui/screens/home_screen.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:appsonews/utils/constants/routes.dart';
 import 'package:flutter/material.dart';
 

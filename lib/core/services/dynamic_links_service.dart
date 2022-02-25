@@ -1,4 +1,5 @@
-import 'package:appsonews/core/models/article_model.dart';
+import 'package:appsonews/utils/constants/strings.dart';
+import 'package:appsonews/utils/constants/url.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 class DynamicLinkService {
@@ -6,10 +7,10 @@ class DynamicLinkService {
     FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://appsonewstest.page.link',
-      link: Uri.parse('https://appsonewstest.page.link/news?'),
-      androidParameters: const AndroidParameters(
-        packageName: "com.exemple.appsonews",
+      uriPrefix: AppUrl.DYNAMIC_LINKS,
+      link: Uri.parse('${AppUrl.DYNAMIC_LINKS}/news?'),
+      androidParameters: AndroidParameters(
+        packageName: AppStrings.APP_PACKAGE,
         minimumVersion: 1,
       ),
     );
@@ -39,7 +40,7 @@ class DynamicLinkService {
       final queryParams = deepLink.queryParameters;
       if (queryParams.isNotEmpty) {
         String? article = queryParams["article"];
-        // verify the username is parsed correctly
+
         return article;
       }
     }

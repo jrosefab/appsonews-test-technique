@@ -4,6 +4,7 @@ import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/widgets/favorite_icon_widget.dart';
 import 'package:appsonews/ui/widgets/shimmer_loading_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:appsonews/utils/constants/images.dart';
 import 'package:appsonews/utils/constants/routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';

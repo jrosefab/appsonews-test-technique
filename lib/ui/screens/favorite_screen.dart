@@ -1,12 +1,10 @@
 import 'package:appsonews/ui/styles/colors.dart';
-import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
+import 'package:appsonews/ui/widgets/article_tile_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../widgets/article_tile_widget.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({Key? key}) : super(key: key);
@@ -28,7 +26,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
   void clearFavorites() {
     sharedPrefViewModel.clearFavorites();
-
     if (sharedPrefViewModel.favoriteNews.isNotEmpty) {
       showDialog<void>(
         context: context,
@@ -80,8 +77,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return Consumer<SharedPrefViewModel>(
         builder: (BuildContext context, SharedPrefViewModel viewModel, _) {
       bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
-      bool loadMoreData = viewModel.loadingType == LoadingType.LOAD_MORE_DATA;
-      bool isEmpty = viewModel.loadingType == LoadingType.IS_EMPTY;
       return ListView.builder(
           padding: EdgeInsets.zero,
           shrinkWrap: true,

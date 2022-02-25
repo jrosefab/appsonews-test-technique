@@ -7,6 +7,7 @@ import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:appsonews/ui/widgets/bottom_navigation_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:appsonews/utils/constants/images.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,7 @@ class _PageViewHandlerState extends State<PageViewHandler> {
   late PageController _pageController;
   late NewsViewModel _newsViewModel;
   late SharedPrefViewModel _sharedPrefViewModel;
-  late int _previousIndex;
+  int? _previousIndex;
   int _selectedIndex = 0;
 
   List<Country> countries = [
@@ -29,7 +30,7 @@ class _PageViewHandlerState extends State<PageViewHandler> {
     Country(name: "Allemagne", code: "de", flag: "🇩🇪"),
     Country(name: "Anglais", code: "en", flag: "🇬🇧"),
     Country(name: "Espagnol", code: "es", flag: "🇪🇸"),
-    Country(name: "Français", code: "fr", flag: "🇫🇷"),
+    Country(name: "France", code: "fr", flag: "🇫🇷"),
     Country(name: "Italie", code: "it", flag: "🇮🇹"),
     Country(name: "Pays-Bas", code: "nl", flag: "🇳🇱"),
     Country(name: "Norvège", code: "no", flag: "🇳🇴"),
@@ -76,25 +77,30 @@ class _PageViewHandlerState extends State<PageViewHandler> {
   }
 
   Future<bool> handlePreviousPage() async {
-    bool hasGoBackToHome =
-        _selectedIndex == _previousIndex && _previousIndex != 0;
+    // allow user to navigate throungh tab
+    if (_previousIndex != null) {
+      bool hasGoBackToHome =
+          _selectedIndex == _previousIndex && _previousIndex != 0;
 
-    bool hasBackToPreviousPage = _selectedIndex != _previousIndex;
+      bool backToPreviousPage = _selectedIndex != _previousIndex;
 
-    if (hasBackToPreviousPage) {
-      setState(() {
-        _selectedIndex = _previousIndex;
-        _pageController.jumpToPage(_previousIndex);
-      });
-      return false;
-    } else if (hasGoBackToHome) {
-      setState(() {
-        _selectedIndex = 0;
-        _pageController.jumpToPage(0);
-      });
-      return false;
+      if (backToPreviousPage) {
+        setState(() {
+          _selectedIndex = _previousIndex!;
+          _pageController.jumpToPage(_previousIndex!);
+        });
+        return false;
+      } else if (hasGoBackToHome) {
+        setState(() {
+          _selectedIndex = 0;
+          _pageController.jumpToPage(0);
+        });
+        return false;
+      } else {
+        return true;
+      }
     } else {
-      return true;
+      return false;
     }
   }
 

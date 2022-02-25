@@ -1,12 +1,11 @@
-import 'dart:collection';
 import 'dart:convert';
 import 'package:appsonews/core/models/article_model.dart';
 import 'package:appsonews/core/models/country_model.dart';
-import 'package:appsonews/core/repositories/news_repository.dart';
 import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/utils/constants/enum.dart';
+import 'package:appsonews/utils/constants/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -18,7 +17,7 @@ class SharedPrefViewModel with ChangeNotifier {
 
   void getNewsFromSharedPref() async {
     List<String> _favoritePrefsNews =
-        await prefService.getStringList("favorites");
+        await prefService.getStringList(AppStrings.FAVORITES);
 
     List<Article> _favoriteArticle = _favoritePrefsNews
         .map((article) => Article.fromMap(json.decode(article)))
@@ -39,26 +38,33 @@ class SharedPrefViewModel with ChangeNotifier {
 
   void chooseFavoriteCountry(Country country) async {
     final pref = SharedPrefService();
-    pref.setString("country", json.encode(country.toJson()));
+    pref.setString(AppStrings.COUNTRY, json.encode(country.toJson()));
     favoriteCountry = country;
     notifyListeners();
   }
 
-  Future<void> getFavoriteCountry() async {
+  Future<Country> getFavoriteCountry() async {
     final pref = SharedPrefService();
-    final country = await pref.getString("country");
-    print(country);
+    final country = await pref.getString(AppStrings.COUNTRY);
+    late Country _favoriteCountry;
     if (country != null) {
-      favoriteCountry = Country.fromMap(json.decode(country));
+      _favoriteCountry = Country.fromMap(json.decode(country));
     } else {
-      favoriteCountry = Country(name: "Français", code: "fr", flag: "🇫🇷");
+      _favoriteCountry = Country(
+          name: AppStrings.DEFAULT_COUNTRY,
+          code: AppStrings.DEFAULT_COUNTRY_CODE,
+          flag: AppStrings.DEFAULT_COUNTRY_FLAG);
     }
+
+    favoriteCountry = _favoriteCountry;
     notifyListeners();
+
+    return _favoriteCountry;
   }
 
   void clearFavorites() {
     final pref = SharedPrefService();
-    pref.removePref("favorites");
+    pref.removePref(AppStrings.FAVORITES);
     favoriteNews.clear();
     notifyListeners();
   }
@@ -66,7 +72,7 @@ class SharedPrefViewModel with ChangeNotifier {
   Future<String> updateFavorite(ArticleViewModel article) async {
     late String message;
     List<String> currentFavorites =
-        await prefService.getStringList("favorites");
+        await prefService.getStringList(AppStrings.FAVORITES);
 
     final articleTime = DateFormat('d/M/y').parse(article.publishedAt);
     final convertedDate = DateFormat("yyyy-MM-ddTHH:mm:ss").format(articleTime);

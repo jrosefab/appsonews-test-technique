@@ -1,5 +1,6 @@
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationWidget extends StatefulWidget {

@@ -1,1 +1,11 @@
 enum LoadingType { HAS_DATA, IS_EMPTY, IS_LOADING, HAS_ERROR, LOAD_MORE_DATA }
+enum TextType {
+  XXSMALL,
+  XSMALL,
+  SMALL,
+  MEDIUM,
+  LARGE,
+  XLARGE,
+  XXLARGE,
+  XXXLARGE
+}

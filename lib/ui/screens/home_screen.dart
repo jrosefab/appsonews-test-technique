@@ -22,10 +22,11 @@ class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin {
   late NewsViewModel newsViewModel;
   late SharedPrefViewModel sharedPrefViewModel;
-  final TextEditingController _searchController = TextEditingController();
-  int page = 1;
   late ScrollController _scrollController;
   late String fromRoute;
+  late String country;
+  final TextEditingController _searchController = TextEditingController();
+  int page = 1;
   FocusNode fieldFocusNode = FocusNode();
   bool hasSearched = false, searchActive = false, isKeyBoardVisible = false;
 
@@ -43,9 +44,11 @@ class _HomeScreenState extends State<HomeScreen>
   bool get wantKeepAlive => true;
 
   Future getNews() async {
-    await sharedPrefViewModel.getFavoriteCountry();
-    newsViewModel.getNews(
-        page, sharedPrefViewModel.favoriteCountry?.code ?? "fr");
+    final _country = await sharedPrefViewModel.getFavoriteCountry();
+    setState(() {
+      country = _country.code;
+    });
+    newsViewModel.getNews(page, _country.code);
   }
 
   void _scrollListener() {
@@ -53,9 +56,9 @@ class _HomeScreenState extends State<HomeScreen>
       bool isTop = _scrollController.position.pixels == 0;
       if (!isTop) {
         setState(() {
-          //  page++;
+          page++;
         });
-        // newsViewModel.getNews(page);
+        newsViewModel.getNews(page, country);
       }
     }
   }
@@ -67,7 +70,6 @@ class _HomeScreenState extends State<HomeScreen>
     if (_searchController.text.length > 2) {
       newsViewModel.searchNews(
           _searchController.text, sharedPrefViewModel.favoriteCountry!.code);
-      if (newsViewModel.findedNews.isNotEmpty) {}
     } else {
       Utils.showSnackBar(context, "Renseigner au minium 2 lettres");
     }
@@ -198,24 +200,6 @@ class _HomeScreenState extends State<HomeScreen>
           Icons.search,
           size: 25,
           color: Colors.white,
-        ),
-      ),
-    );
-
-    GestureDetector(
-      onTap: searchNews,
-      child: Container(
-        height: 60,
-        width: 60,
-        margin: const EdgeInsets.only(left: 10),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15), color: AppColors.PRIMARY),
-        child: const Center(
-          child: Icon(
-            Icons.search,
-            size: 25,
-            color: Colors.white,
-          ),
         ),
       ),
     );

@@ -1,18 +1,13 @@
-import 'dart:convert';
-
-import 'package:appsonews/core/models/article_model.dart';
-import 'package:appsonews/core/repositories/news_repository.dart';
 import 'package:appsonews/core/services/dynamic_links_service.dart';
 import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/widgets/favorite_icon_widget.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:share_plus/share_plus.dart';
-
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ArticleScreen extends StatefulWidget {
   const ArticleScreen({Key? key, required this.argument}) : super(key: key);
@@ -65,34 +60,38 @@ class _ArticleScreenState extends State<ArticleScreen> {
       body: Stack(
         children: [
           _topArticleImage(context),
-          DraggableScrollableSheet(
-            initialChildSize: 0.7,
-            minChildSize: 0.65,
-            maxChildSize: 1,
-            expand: true,
-            builder: (context, scrollController) {
-              return SingleChildScrollView(
-                controller: scrollController,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  height: MediaQuery.of(context).size.height,
-                  decoration: const BoxDecoration(
-                      color: AppColors.WHITE,
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(20),
-                          topLeft: Radius.circular(20))),
-                  child: _articleContent(context),
-                ),
-              );
-            },
-          ),
+          _draggableWrapper(),
         ],
       ),
     );
   }
 
-  Container _topArticleImage(BuildContext context) {
+  Widget _draggableWrapper() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      minChildSize: 0.65,
+      maxChildSize: 1,
+      expand: true,
+      builder: (context, scrollController) {
+        return SingleChildScrollView(
+          controller: scrollController,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+                color: AppColors.WHITE,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    topLeft: Radius.circular(20))),
+            child: _articleContent(context),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _topArticleImage(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.4,
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -115,19 +114,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            _publishedDate(),
-            const SizedBox(
-              width: 5,
-            ),
-            FavoriteIconWidget(
-              article: article,
-              size: 40,
-            ),
-          ],
-        ),
+        _topInfos(),
         const SizedBox(
           height: 20,
         ),
@@ -144,18 +131,33 @@ class _ArticleScreenState extends State<ArticleScreen> {
         const SizedBox(
           height: 30,
         ),
-        if (article.author != null)
-          if (article.author!.isNotEmpty)
-            Column(
-              children: [
-                _contentInfo("Auteur", article.author!),
-              ],
-            ),
+        if (article.author!.isNotEmpty)
+          Column(
+            children: [
+              _contentInfo("Auteur", article.author!),
+            ],
+          ),
       ],
     );
   }
 
-  Column _contentInfo(String label, String content) {
+  Widget _topInfos() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        _publishedDate(),
+        const SizedBox(
+          width: 5,
+        ),
+        FavoriteIconWidget(
+          article: article,
+          size: 40,
+        ),
+      ],
+    );
+  }
+
+  Widget _contentInfo(String label, String content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,7 +179,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
     );
   }
 
-  Container _publishedDate() {
+  Widget _publishedDate() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(

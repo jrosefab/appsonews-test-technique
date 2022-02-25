@@ -1,15 +1,5 @@
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
-
-enum TextType {
-  XXSMALL,
-  XSMALL,
-  SMALL,
-  MEDIUM,
-  LARGE,
-  XLARGE,
-  XXLARGE,
-  XXXLARGE
-}
 
 class TextWidget extends StatelessWidget {
   final String content;
