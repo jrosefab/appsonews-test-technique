@@ -14,7 +14,7 @@ class SharedPrefViewModel with ChangeNotifier {
   SharedPrefService prefService = SharedPrefService();
   LoadingType loadingType = LoadingType.IS_LOADING;
   List<ArticleViewModel> favoriteNews = [];
-  Country favoriteCountry = Country(name: "Français", code: "fr", flag: "🇫🇷");
+  Country? favoriteCountry;
 
   void getNewsFromSharedPref() async {
     List<String> _favoritePrefsNews =
@@ -44,11 +44,14 @@ class SharedPrefViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void getFavoriteCountry() async {
+  Future<void> getFavoriteCountry() async {
     final pref = SharedPrefService();
     final country = await pref.getString("country");
+    print(country);
     if (country != null) {
       favoriteCountry = Country.fromMap(json.decode(country));
+    } else {
+      favoriteCountry = Country(name: "Français", code: "fr", flag: "🇫🇷");
     }
     notifyListeners();
   }

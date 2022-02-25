@@ -7,6 +7,7 @@ import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/ui/widgets/title_widget.dart';
 import 'package:appsonews/ui/widgets/featured_article_widget.dart';
 import 'package:appsonews/utils/constants/enum.dart';
+import 'package:appsonews/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,11 +36,17 @@ class _HomeScreenState extends State<HomeScreen>
     sharedPrefViewModel =
         Provider.of<SharedPrefViewModel>(context, listen: false);
     newsViewModel = Provider.of<NewsViewModel>(context, listen: false);
-    newsViewModel.getNews(page);
+    getNews();
   }
 
   @override
   bool get wantKeepAlive => true;
+
+  Future getNews() async {
+    await sharedPrefViewModel.getFavoriteCountry();
+    newsViewModel.getNews(
+        page, sharedPrefViewModel.favoriteCountry?.code ?? "fr");
+  }
 
   void _scrollListener() {
     if (_scrollController.position.atEdge) {
@@ -54,12 +61,16 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void searchNews() {
-    newsViewModel.searchNews(
-        _searchController.text, sharedPrefViewModel.favoriteCountry.code);
-    if (newsViewModel.findedNews.isNotEmpty) {
-      setState(() {
-        newsFinded = true;
-      });
+    if (_searchController.text.length > 2) {
+      newsViewModel.searchNews(
+          _searchController.text, sharedPrefViewModel.favoriteCountry!.code);
+      if (newsViewModel.findedNews.isNotEmpty) {
+        setState(() {
+          newsFinded = true;
+        });
+      }
+    } else {
+      Utils.showSnackBar(context, "Renseigner au minium 2 lettres");
     }
   }
 
@@ -177,12 +188,19 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _searchingBtn() {
-    return IconButton(
-      onPressed: searchNews,
-      icon: Icon(
-        Icons.search,
-        size: 25,
-        color: Colors.white,
+    return Container(
+      margin: const EdgeInsets.only(left: 5.0),
+      child: CircleAvatar(
+        radius: 30,
+        backgroundColor: AppColors.PRIMARY,
+        child: IconButton(
+          onPressed: searchNews,
+          icon: const Icon(
+            Icons.search,
+            size: 25,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
 

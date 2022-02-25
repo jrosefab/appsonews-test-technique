@@ -16,8 +16,16 @@ class NewsViewModel with ChangeNotifier {
   List<ArticleViewModel> featuredNews = [];
   List<ArticleViewModel> favoriteNews = [];
 
-  void getNews(int page) async {
-    List<Article> _news = await newsRepository.getNews(page);
+  void getNews(int page, String country) async {
+    String? fixedCode;
+    if (country == "en") {
+      fixedCode = "gb";
+    } else if (country == "es") {
+      fixedCode = "ar";
+    }
+
+    List<Article> _news =
+        await newsRepository.getNews(page, fixedCode ?? country);
 
     if (page > 1) {
       news.addAll(

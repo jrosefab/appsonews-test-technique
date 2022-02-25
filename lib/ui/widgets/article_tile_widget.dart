@@ -70,12 +70,14 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget> {
                         const SizedBox(
                           width: 5,
                         ),
-                        if (widget.article.author != null)
-                          TextWidget(
-                            content: "|  ${widget.article.author} ",
-                            type: TextType.XSMALL,
-                            color: Colors.grey,
-                            overflow: true,
+                        if (widget.article.author!.isNotEmpty)
+                          Expanded(
+                            child: TextWidget(
+                              content: "|  ${widget.article.author} ",
+                              type: TextType.XSMALL,
+                              color: Colors.grey,
+                              overflow: true,
+                            ),
                           ),
                       ],
                     )

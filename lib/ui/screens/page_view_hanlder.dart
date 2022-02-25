@@ -3,6 +3,7 @@ import 'package:appsonews/core/models/country_model.dart';
 import 'package:appsonews/ui/screens/favorite_screen.dart';
 import 'package:appsonews/ui/screens/home_screen.dart';
 import 'package:appsonews/ui/styles/colors.dart';
+import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:appsonews/ui/widgets/bottom_navigation_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
@@ -18,16 +19,23 @@ class PageViewHandler extends StatefulWidget {
 
 class _PageViewHandlerState extends State<PageViewHandler> {
   late PageController _pageController;
+  late NewsViewModel _newsViewModel;
   late SharedPrefViewModel _sharedPrefViewModel;
   late int _previousIndex;
   int _selectedIndex = 0;
 
   List<Country> countries = [
+    Country(name: "Argentine", code: "ar", flag: "🇦🇷"),
+    Country(name: "Allemagne", code: "de", flag: "🇩🇪"),
+    Country(name: "Anglais", code: "en", flag: "🇬🇧"),
+    Country(name: "Espagnol", code: "es", flag: "🇪🇸"),
     Country(name: "Français", code: "fr", flag: "🇫🇷"),
-    Country(name: "Deutsh", code: "de", flag: "🇩🇪"),
-    Country(name: "English", code: "en", flag: "🇬🇧"),
-    Country(name: "Spanish", code: "es", flag: "🇪🇸"),
-    Country(name: "Arabic", code: "ar", flag: "🇸🇦"),
+    Country(name: "Italie", code: "it", flag: "🇮🇹"),
+    Country(name: "Pays-Bas", code: "nl", flag: "🇳🇱"),
+    Country(name: "Norvège", code: "no", flag: "🇳🇴"),
+    Country(name: "Portugal", code: "pt", flag: "🇵🇹"),
+    Country(name: "Russie", code: "ru", flag: "🇷🇺"),
+    Country(name: "Suède", code: "se", flag: "🇸🇪"),
   ];
 
   List<Widget> tabScreen = [
@@ -38,7 +46,9 @@ class _PageViewHandlerState extends State<PageViewHandler> {
   @override
   void initState() {
     super.initState();
+
     _pageController = PageController(initialPage: _selectedIndex);
+    _newsViewModel = Provider.of<NewsViewModel>(context, listen: false);
     _sharedPrefViewModel =
         Provider.of<SharedPrefViewModel>(context, listen: false);
   }
@@ -51,6 +61,8 @@ class _PageViewHandlerState extends State<PageViewHandler> {
 
   void selectCountry(Country country) {
     _sharedPrefViewModel.chooseFavoriteCountry(country);
+
+    _newsViewModel.getNews(1, country.code);
     Navigator.of(context).pop();
   }
 
@@ -155,7 +167,7 @@ class _PageViewHandlerState extends State<PageViewHandler> {
   Widget _selectedCountry() {
     return Consumer<SharedPrefViewModel>(
         builder: (BuildContext context, SharedPrefViewModel viewModel, _) {
-      return GestureDetector(
+      return InkWell(
         onTap: choosCountries,
         child: Container(
           height: 60,
@@ -163,7 +175,7 @@ class _PageViewHandlerState extends State<PageViewHandler> {
           padding: const EdgeInsets.all(20.0),
           child: Center(
             child: TextWidget(
-              content: viewModel.favoriteCountry.flag,
+              content: viewModel.favoriteCountry?.flag ?? "",
               type: TextType.LARGE,
             ),
           ),

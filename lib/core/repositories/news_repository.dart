@@ -17,10 +17,10 @@ class NewsRepositoryImpl extends NewsRepository {
 
   Dio dio = Dio();
 
-  Future<List<Article>> getNews(int page) async {
+  Future<List<Article>> getNews(int page, String country) async {
     String url = AppUrl.TOP_HEAD_LINES_URL;
     final response = await Dio().get(url, queryParameters: {
-      COUNTRY_PARAMETER: "fr",
+      COUNTRY_PARAMETER: country,
       API_KEY_PARAMETER:
           "231424f0488947ccaecd32567871727c", //"f40097c5da6b4a7dae41c7f1372db5a0"
       PAGE_SIZE_PARAMETER: "$DEFAULT_PAGE_SIZE",
