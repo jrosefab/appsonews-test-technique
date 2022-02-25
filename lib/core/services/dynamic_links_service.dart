@@ -1,11 +1,13 @@
+import 'package:appsonews/core/models/article_model.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 class DynamicLinkService {
-  Future<Uri> buildLink(String article) async {
+  Future<Uri> buildLink() async {
     FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://appsonews-app.page.link',
-      link: Uri.parse('https://appsonews-app.page.link/news?article=$article'),
+      uriPrefix: 'https://appsonewstest.page.link',
+      link: Uri.parse('https://appsonewstest.page.link/news?'),
       androidParameters: const AndroidParameters(
         packageName: "com.exemple.appsonews",
         minimumVersion: 1,
@@ -21,37 +23,26 @@ class DynamicLinkService {
     final PendingDynamicLinkData? initialLink =
         await FirebaseDynamicLinks.instance.getInitialLink();
 
-    _handleDeepLink(initialLink);
-
     FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
       _handleDeepLink(dynamicLinkData);
     }).onError((error) {
       print("Dynamic Link failed : $error");
     });
+
+    return _handleDeepLink(initialLink);
   }
 
-  void getLinkForegroundAndBackground() {
-    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
-      print("getLinkForegroundAndBackground $dynamicLinkData");
-    }).onError((error) {
-      // Handle errors
-    });
-  }
-
-  void _handleDeepLink(PendingDynamicLinkData? data) {
+  Future<String?> _handleDeepLink(PendingDynamicLinkData? data) async {
     final Uri? deepLink = data?.link;
 
-    print("hello there");
-    print(deepLink);
     if (deepLink != null) {
-      print("there ${deepLink.queryParameters["article"]}");
       final queryParams = deepLink.queryParameters;
       if (queryParams.isNotEmpty) {
         String? article = queryParams["article"];
         // verify the username is parsed correctly
-        print("The article is: $article");
+        return article;
       }
-      print("handleDeepLink ${deepLink.queryParameters}");
     }
+    return null;
   }
 }

@@ -37,4 +37,26 @@ class NewsRepositoryImpl extends NewsRepository {
       throw Exception("Failed to get top news");
     }
   }
+
+  Future<List<Article>> searchNews(String content, String language) async {
+    String url = AppUrl.EVERYTHING_URL;
+    final response = await Dio().get(url, queryParameters: {
+      QUERY_PARAMETER: content,
+      LANGUAGE_PARAMETER: language,
+      API_KEY_PARAMETER:
+          "231424f0488947ccaecd32567871727c", //"f40097c5da6b4a7dae41c7f1372db5a0"
+      PAGE_SIZE_PARAMETER: "10",
+      PAGE_PARAMETER: "1",
+    });
+
+    if (response.statusCode == 200) {
+      final result = response.data;
+
+      Iterable list = result["articles"];
+
+      return list.map((article) => Article.fromMap(article)).toList();
+    } else {
+      throw Exception("Failed to get top news");
+    }
+  }
 }

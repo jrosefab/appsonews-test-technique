@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "931626568490",
+    "project_id": "appsonews-app",
+    "storage_bucket": "appsonews-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931626568490:android:fc281e50d486fec912ac53",
+        "android_client_info": {
+          "package_name": "com.example.appsonews"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931626568490-amdsut142o1ihod5om7vl1m6kblnup1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvHCz5aKPSqifgehgz2Mzkf4rWaAxdBhI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931626568490-amdsut142o1ihod5om7vl1m6kblnup1t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

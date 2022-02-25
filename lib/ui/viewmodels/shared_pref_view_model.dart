@@ -1,18 +1,20 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'package:appsonews/core/models/article_model.dart';
+import 'package:appsonews/core/models/country_model.dart';
 import 'package:appsonews/core/repositories/news_repository.dart';
 import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
+import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-enum LoadingType { HAS_DATA, IS_EMPTY, IS_LOADING, LOAD_MORE_DATA }
 
 class SharedPrefViewModel with ChangeNotifier {
   SharedPrefService prefService = SharedPrefService();
   LoadingType loadingType = LoadingType.IS_LOADING;
   List<ArticleViewModel> favoriteNews = [];
+  Country favoriteCountry = Country(name: "Français", code: "fr", flag: "🇫🇷");
 
   void getNewsFromSharedPref() async {
     List<String> _favoritePrefsNews =
@@ -29,9 +31,25 @@ class SharedPrefViewModel with ChangeNotifier {
     }
 
     favoriteNews = _favoriteArticle
-        .map((article) => ArticleViewModel(article: article))
+        .map((article) => NewsViewModel.convertArticleToViewModel(article))
         .toList();
 
+    notifyListeners();
+  }
+
+  void chooseFavoriteCountry(Country country) async {
+    final pref = SharedPrefService();
+    pref.setString("country", json.encode(country.toJson()));
+    favoriteCountry = country;
+    notifyListeners();
+  }
+
+  void getFavoriteCountry() async {
+    final pref = SharedPrefService();
+    final country = await pref.getString("country");
+    if (country != null) {
+      favoriteCountry = Country.fromMap(json.decode(country));
+    }
     notifyListeners();
   }
 
@@ -78,10 +96,8 @@ class SharedPrefViewModel with ChangeNotifier {
         .toList();
 
     favoriteNews = _favoriteNews
-        .map((article) => ArticleViewModel(article: article))
+        .map((article) => NewsViewModel.convertArticleToViewModel(article))
         .toList();
-
-    print("mes favoris vm sont $favoriteNews");
 
     notifyListeners();
     return message;

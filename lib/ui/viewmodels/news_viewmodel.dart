@@ -5,14 +5,14 @@ import 'package:appsonews/core/models/article_model.dart';
 import 'package:appsonews/core/repositories/news_repository.dart';
 import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
-
-enum LoadingType { HAS_DATA, IS_EMPTY, IS_LOADING, LOAD_MORE_DATA }
 
 class NewsViewModel with ChangeNotifier {
   final newsRepository = NewsRepositoryImpl();
   LoadingType loadingType = LoadingType.IS_LOADING;
   List<ArticleViewModel> news = [];
+  List<ArticleViewModel> findedNews = [];
   List<ArticleViewModel> featuredNews = [];
   List<ArticleViewModel> favoriteNews = [];
 
@@ -21,13 +21,13 @@ class NewsViewModel with ChangeNotifier {
 
     if (page > 1) {
       news.addAll(
-          _news.map((article) => ArticleViewModel(article: article)).toList());
+          _news.map((article) => convertArticleToViewModel(article)).toList());
       loadingType = LoadingType.LOAD_MORE_DATA;
     } else {
       featuredNews.clear();
 
       news =
-          _news.map((article) => ArticleViewModel(article: article)).toList();
+          _news.map((article) => convertArticleToViewModel(article)).toList();
 
       for (int i = 0; i < 3; i++) {
         featuredNews.add(news[i]);
@@ -42,5 +42,19 @@ class NewsViewModel with ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  void searchNews(String content, String language) async {
+    List<Article> _findedNews =
+        await newsRepository.searchNews(content, language);
+    findedNews = _findedNews
+        .map((article) => convertArticleToViewModel(article))
+        .toList();
+
+    notifyListeners();
+  }
+
+  static ArticleViewModel convertArticleToViewModel(Article article) {
+    return ArticleViewModel(article: article);
   }
 }

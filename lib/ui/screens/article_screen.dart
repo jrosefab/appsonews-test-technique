@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:appsonews/core/models/article_model.dart';
+import 'package:appsonews/core/repositories/news_repository.dart';
 import 'package:appsonews/core/services/dynamic_links_service.dart';
 import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
@@ -26,13 +30,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
   void initState() {
     super.initState();
     article = widget.argument.content as ArticleViewModel;
-
     setColorText();
   }
 
   Future<void> shareArticle() async {
     final dynamicLinksService = DynamicLinkService();
-    final url = await dynamicLinksService.buildLink("bonjour");
+    late Uri url;
+    if (article.url == null) {
+      url = await dynamicLinksService.buildLink();
+    } else {
+      url = Uri.parse(article.url!);
+    }
     Share.share("Découvre sur AppsoNews : $url");
   }
 

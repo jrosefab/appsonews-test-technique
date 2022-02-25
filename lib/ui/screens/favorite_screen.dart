@@ -2,6 +2,7 @@ import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

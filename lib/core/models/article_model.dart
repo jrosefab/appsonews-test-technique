@@ -19,26 +19,26 @@ class Article {
       this.content});
 
   Article.fromMap(Map<String, dynamic> map)
-      : title = map['title'] ?? "",
-        author = map['author'] ?? "",
+      : title = map['title'] ?? '',
+        author = map['author'] ?? '',
         source = Source.fromMap(map['source']),
         urlToImage = map['urlToImage'] ??
-            "https://eic-immobilier.fr/wp-content/themes/realestate-7/images/no-image.png",
+            'https://eic-immobilier.fr/wp-content/themes/realestate-7/images/no-image.png',
         publishedAt = map['publishedAt'],
-        description = map['description'] ?? "",
-        url = map['url'] ?? "",
-        content = map['content'] ?? "";
+        description = map['description'] ?? '',
+        url = map['url'] ?? '',
+        content = map['content'] ?? '';
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'title': title,
-      'author': author,
+      'title': title ?? '',
+      'author': author ?? '',
       'source': source.toJson(),
       'urlToImage': urlToImage,
       'publishedAt': publishedAt,
-      'description': description,
-      'url': url,
-      'content': content,
+      'description': description ?? '',
+      'url': url ?? '',
+      'content': content ?? '',
     };
   }
 }
@@ -53,13 +53,13 @@ class Source {
   });
 
   Source.fromMap(Map<String, dynamic> map)
-      : id = map['id'] ?? "",
-        name = map['name'] ?? "";
+      : id = map['id'] ?? '',
+        name = map['name'] ?? '';
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'id': id,
-      'name': name,
+      'id': id ?? '',
+      'name': name ?? '',
     };
   }
 }

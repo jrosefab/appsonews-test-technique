@@ -1,10 +1,12 @@
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
+import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:appsonews/ui/widgets/article_tile_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/ui/widgets/title_widget.dart';
 import 'package:appsonews/ui/widgets/featured_article_widget.dart';
+import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,17 +20,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin {
   late NewsViewModel newsViewModel;
+  late SharedPrefViewModel sharedPrefViewModel;
   final TextEditingController _searchController = TextEditingController();
   int page = 1;
   late ScrollController _scrollController;
   late String fromRoute;
   FocusNode fieldFocusNode = FocusNode();
-  bool searchActive = false, isKeyBoardVisible = false;
+  bool newsFinded = false, searchActive = false, isKeyBoardVisible = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
+    sharedPrefViewModel =
+        Provider.of<SharedPrefViewModel>(context, listen: false);
     newsViewModel = Provider.of<NewsViewModel>(context, listen: false);
     newsViewModel.getNews(page);
   }
@@ -48,6 +53,16 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  void searchNews() {
+    newsViewModel.searchNews(
+        _searchController.text, sharedPrefViewModel.favoriteCountry.code);
+    if (newsViewModel.findedNews.isNotEmpty) {
+      setState(() {
+        newsFinded = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -63,16 +78,24 @@ class _HomeScreenState extends State<HomeScreen>
           const SizedBox(
             height: 20,
           ),
-          _featuredNewsConsumer(),
-          const SizedBox(
-            height: 20,
-          ),
-          Flexible(
-            child: _newsListConsumer(context),
-          ),
-          const SizedBox(
-            height: 100,
-          ),
+          if (newsFinded) _searchedNewsConsumer(),
+          if (!newsFinded)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _featuredNewsConsumer(),
+                const SizedBox(
+                  height: 20,
+                ),
+                Flexible(
+                  child: _newsListConsumer(context),
+                ),
+                const SizedBox(
+                  height: 100,
+                ),
+              ],
+            )
 
           // ListView.builder(itemBuilder: itemBuilder)
         ],
@@ -106,48 +129,124 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _serchTextForm() {
-    return TextFormField(
-      controller: _searchController,
-      focusNode: fieldFocusNode,
-      onTap: () {
-        setState(() {
-          searchActive = true;
-        });
-      },
-      onChanged: (query) {
-        //    if (query.length >= 1) _searchGame(ref, query);
-      },
-      decoration: InputDecoration(
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-          prefixIcon: const Icon(
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            controller: _searchController,
+            focusNode: fieldFocusNode,
+            onTap: () {
+              setState(() {
+                searchActive = true;
+              });
+            },
+            onChanged: (query) {
+              //    if (query.length >= 1) _searchGame(ref, query);
+            },
+            decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    searchActive = false;
+                    newsFinded = false;
+                    _searchController.clear();
+                  },
+                  icon: Icon(
+                    Icons.clear,
+                    size: 20,
+                    color: searchActive
+                        ? AppColors.SECONDARY
+                        : Colors.black.withOpacity(0.1),
+                  ),
+                ),
+                hintText: "Rechercher un évenement",
+                hintStyle: const TextStyle(color: Colors.black26),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+        ),
+        if (searchActive) _searchingBtn()
+      ],
+    );
+  }
+
+  Widget _searchingBtn() {
+    return IconButton(
+      onPressed: searchNews,
+      icon: Icon(
+        Icons.search,
+        size: 25,
+        color: Colors.white,
+      ),
+    );
+
+    GestureDetector(
+      onTap: searchNews,
+      child: Container(
+        height: 60,
+        width: 60,
+        margin: const EdgeInsets.only(left: 10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15), color: AppColors.PRIMARY),
+        child: const Center(
+          child: Icon(
             Icons.search,
             size: 25,
-            color: Colors.black38,
+            color: Colors.white,
           ),
-          suffixIcon: IconButton(
-            onPressed: () {
-              FocusScope.of(context).unfocus();
-              searchActive = false;
-              _searchController.clear();
-            },
-            icon: Icon(
-              Icons.clear,
-              size: 20,
-              color: searchActive
-                  ? AppColors.SECONDARY
-                  : Colors.black.withOpacity(0.1),
-            ),
-          ),
-          hintText: "Rechercher un évenement",
-          hintStyle: const TextStyle(color: Colors.black26),
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(15.0),
-          )),
+        ),
+      ),
     );
+  }
+
+  Widget _searchedNewsConsumer() {
+    return Consumer<NewsViewModel>(
+        builder: (BuildContext context, NewsViewModel viewModel, _) {
+      bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
+      bool loadMoreData = viewModel.loadingType == LoadingType.LOAD_MORE_DATA;
+      bool isEmpty = viewModel.loadingType == LoadingType.IS_EMPTY;
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TitleWidget(content: "Vous avez recherché"),
+            ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: isLoading ? 6 : newsViewModel.findedNews.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if (isLoading) {
+                    return const ShimmerArticleTileWidget();
+                  }
+                  final article = newsViewModel.findedNews[index];
+                  return ArticleTileWidget(
+                    article: article,
+                  );
+                }),
+            if (loadMoreData)
+              const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.PRIMARY,
+                ),
+              ),
+            if (isEmpty)
+              const TextWidget(
+                content: "Il n'y'a plus d'actualités",
+                type: TextType.MEDIUM,
+                align: TextAlign.center,
+              )
+          ],
+        ),
+      );
+    });
   }
 
   Widget _featuredNewsConsumer() {
