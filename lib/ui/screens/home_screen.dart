@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:appsonews/ui/styles/colors.dart';
-import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
 import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:appsonews/ui/widgets/article_tile_widget.dart';
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen>
   late ScrollController _scrollController;
   late String fromRoute;
   FocusNode fieldFocusNode = FocusNode();
-  bool newsFinded = false, searchActive = false, isKeyBoardVisible = false;
+  bool hasSearched = false, searchActive = false, isKeyBoardVisible = false;
 
   @override
   void initState() {
@@ -61,14 +61,13 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void searchNews() {
+    setState(() {
+      hasSearched = true;
+    });
     if (_searchController.text.length > 2) {
       newsViewModel.searchNews(
           _searchController.text, sharedPrefViewModel.favoriteCountry!.code);
-      if (newsViewModel.findedNews.isNotEmpty) {
-        setState(() {
-          newsFinded = true;
-        });
-      }
+      if (newsViewModel.findedNews.isNotEmpty) {}
     } else {
       Utils.showSnackBar(context, "Renseigner au minium 2 lettres");
     }
@@ -77,41 +76,40 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      controller: _scrollController,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(
-            height: 20,
-          ),
-          _searchTextForm(),
-          const SizedBox(
-            height: 20,
-          ),
-          if (newsFinded) _searchedNewsConsumer(),
-          if (!newsFinded)
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _featuredNewsConsumer(),
-                const SizedBox(
-                  height: 20,
-                ),
-                Flexible(
-                  child: _newsListConsumer(context),
-                ),
-                const SizedBox(
-                  height: 100,
-                ),
-              ],
-            )
+        controller: _scrollController,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(
+              height: 20,
+            ),
+            _searchTextForm(),
+            const SizedBox(
+              height: 20,
+            ),
+            if (hasSearched) _searchedNewsConsumer(),
+            if (!hasSearched)
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _featuredNewsConsumer(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Flexible(
+                    child: _newsListConsumer(context),
+                  ),
+                  const SizedBox(
+                    height: 100,
+                  ),
+                ],
+              )
 
-          // ListView.builder(itemBuilder: itemBuilder)
-        ],
-      ),
-    );
+            // ListView.builder(itemBuilder: itemBuilder)
+          ],
+        ));
   }
 
   Widget _searchTextForm() {
@@ -161,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen>
                   onPressed: () {
                     FocusScope.of(context).unfocus();
                     searchActive = false;
-                    newsFinded = false;
+                    hasSearched = false;
                     _searchController.clear();
                   },
                   icon: Icon(
@@ -188,18 +186,18 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _searchingBtn() {
-    return Container(
-      margin: const EdgeInsets.only(left: 5.0),
-      child: CircleAvatar(
-        radius: 30,
-        backgroundColor: AppColors.PRIMARY,
-        child: IconButton(
-          onPressed: searchNews,
-          icon: const Icon(
-            Icons.search,
-            size: 25,
-            color: Colors.white,
-          ),
+    return InkWell(
+      onTap: searchNews,
+      child: Container(
+        height: 60,
+        width: 60,
+        margin: const EdgeInsets.only(left: 5.0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20), color: AppColors.PRIMARY),
+        child: const Icon(
+          Icons.search,
+          size: 25,
+          color: Colors.white,
         ),
       ),
     );
@@ -229,26 +227,33 @@ class _HomeScreenState extends State<HomeScreen>
       bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
       bool loadMoreData = viewModel.loadingType == LoadingType.LOAD_MORE_DATA;
       bool isEmpty = viewModel.loadingType == LoadingType.IS_EMPTY;
+      bool hasError = viewModel.loadingType == LoadingType.HAS_ERROR;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const TitleWidget(content: "Vous avez recherché"),
-            ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: isLoading ? 6 : newsViewModel.findedNews.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (isLoading) {
-                    return const ShimmerArticleTileWidget();
-                  }
-                  final article = newsViewModel.findedNews[index];
-                  return ArticleTileWidget(
-                    article: article,
-                  );
-                }),
+            hasError
+                ? const TextWidget(
+                    content: "Erreur lors du chargement des actualités",
+                    type: TextType.MEDIUM,
+                    align: TextAlign.center,
+                  )
+                : ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: isLoading ? 6 : newsViewModel.findedNews.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (isLoading) {
+                        return const ShimmerArticleTileWidget();
+                      }
+                      final article = newsViewModel.findedNews[index];
+                      return ArticleTileWidget(
+                        article: article,
+                      );
+                    }),
             if (loadMoreData)
               const Center(
                 child: CircularProgressIndicator(
@@ -257,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             if (isEmpty)
               const TextWidget(
-                content: "Il n'y'a plus d'actualités",
+                content: "Aucun résultat",
                 type: TextType.MEDIUM,
                 align: TextAlign.center,
               )
@@ -271,29 +276,37 @@ class _HomeScreenState extends State<HomeScreen>
     return Consumer(
         builder: (BuildContext context, NewsViewModel viewModel, _) {
       bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: TitleWidget(content: "À la une"),
-          ),
-          SizedBox(
-            height: 180,
-            child: ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: isLoading ? 3 : newsViewModel.featuredNews.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (isLoading) {
-                    return const ShimmerFeaturedArticleWidget();
-                  }
-                  final article = newsViewModel.featuredNews[index];
-                  return FeaturedArticleWidget(article: article);
-                }),
-          ),
-        ],
+      bool hasError = viewModel.loadingType == LoadingType.HAS_ERROR;
+      return Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TitleWidget(content: "À la une"),
+            hasError
+                ? const TextWidget(
+                    content: "Erreur lors du chargement des actualités",
+                    type: TextType.MEDIUM,
+                    align: TextAlign.center,
+                  )
+                : SizedBox(
+                    height: 180,
+                    child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount:
+                            isLoading ? 3 : newsViewModel.featuredNews.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (isLoading) {
+                            return const ShimmerFeaturedArticleWidget();
+                          }
+                          final article = newsViewModel.featuredNews[index];
+                          return FeaturedArticleWidget(article: article);
+                        }),
+                  ),
+          ],
+        ),
       );
     });
   }
@@ -303,39 +316,43 @@ class _HomeScreenState extends State<HomeScreen>
         builder: (BuildContext context, NewsViewModel viewModel, _) {
       bool isLoading = viewModel.loadingType == LoadingType.IS_LOADING;
       bool loadMoreData = viewModel.loadingType == LoadingType.LOAD_MORE_DATA;
-      bool isEmpty = viewModel.loadingType == LoadingType.IS_EMPTY;
+      bool hasError = viewModel.loadingType == LoadingType.HAS_ERROR;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const TitleWidget(content: "Les actualités"),
-            ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: isLoading ? 6 : newsViewModel.news.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (isLoading) {
-                    return const ShimmerArticleTileWidget();
-                  }
-                  final article = newsViewModel.news[index];
-                  return ArticleTileWidget(
-                    article: article,
-                  );
-                }),
-            if (loadMoreData)
-              const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.PRIMARY,
-                ),
-              ),
-            if (isEmpty)
-              const TextWidget(
-                content: "Il n'y'a plus d'actualités",
-                type: TextType.MEDIUM,
-                align: TextAlign.center,
-              )
+            hasError
+                ? const TextWidget(
+                    content: "Erreur lors du chargement des actualités",
+                    type: TextType.MEDIUM,
+                    align: TextAlign.center,
+                  )
+                : Column(
+                    children: [
+                      ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: isLoading ? 6 : newsViewModel.news.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (isLoading) {
+                              return const ShimmerArticleTileWidget();
+                            }
+                            final article = newsViewModel.news[index];
+                            return ArticleTileWidget(
+                              article: article,
+                            );
+                          }),
+                      if (loadMoreData)
+                        const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.PRIMARY,
+                          ),
+                        ),
+                    ],
+                  ),
           ],
         ),
       );

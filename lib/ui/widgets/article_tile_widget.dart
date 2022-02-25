@@ -1,22 +1,14 @@
-import 'dart:convert';
-
-import 'package:appsonews/core/models/article_model.dart';
-import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/router.dart';
 import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
-import 'package:appsonews/ui/viewmodels/news_viewmodel.dart';
-import 'package:appsonews/ui/viewmodels/shared_pref_view_model.dart';
 import 'package:appsonews/ui/widgets/favorite_icon_widget.dart';
 import 'package:appsonews/ui/widgets/shimmer_loading_widget.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/constants/images.dart';
 import 'package:appsonews/utils/constants/routes.dart';
-import 'package:appsonews/utils/utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class ArticleTileWidget extends StatefulWidget {
   const ArticleTileWidget({
@@ -116,23 +108,34 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget> {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
-      child: FadeInImage(
-        image: NetworkImage(widget.article.urlToImage),
-        placeholder: const AssetImage(
-          AppImages.NOT_FOUND,
-        ),
-        imageErrorBuilder: (context, error, stackTrace) {
-          return Image.asset(
-            AppImages.NOT_FOUND,
-            fit: BoxFit.cover,
-            height: 110,
-            width: 110,
-          );
-        },
-        fit: BoxFit.cover,
-        height: 110,
-        width: 110,
-      ),
+      child: CachedNetworkImage(
+          height: 110,
+          width: 110,
+          imageUrl: widget.article.urlToImage,
+          imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+          placeholder: (context, url) => Stack(
+                children: [
+                  _defaultImage(),
+                  const Center(child: CircularProgressIndicator()),
+                ],
+              ),
+          errorWidget: (context, url, error) => _defaultImage()),
+    );
+  }
+
+  Widget _defaultImage() {
+    return Image.asset(
+      AppImages.NOT_FOUND,
+      fit: BoxFit.cover,
+      height: 110,
+      width: 110,
     );
   }
 }

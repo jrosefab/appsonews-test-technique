@@ -1,9 +1,5 @@
-import 'dart:collection';
-import 'dart:convert';
-
 import 'package:appsonews/core/models/article_model.dart';
 import 'package:appsonews/core/repositories/news_repository.dart';
-import 'package:appsonews/core/services/shared_preference_service.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/utils/constants/enum.dart';
 import 'package:flutter/material.dart';
@@ -24,40 +20,56 @@ class NewsViewModel with ChangeNotifier {
       fixedCode = "ar";
     }
 
-    List<Article> _news =
-        await newsRepository.getNews(page, fixedCode ?? country);
+    List<Article>? _news = await newsRepository
+        .getNews(page, fixedCode ?? country)
+        .catchError((error) {
+      loadingType = LoadingType.HAS_ERROR;
+    });
 
-    if (page > 1) {
-      news.addAll(
-          _news.map((article) => convertArticleToViewModel(article)).toList());
-      loadingType = LoadingType.LOAD_MORE_DATA;
-    } else {
-      featuredNews.clear();
+    if (_news != null) {
+      if (page > 1) {
+        news.addAll(_news
+            .map((article) => convertArticleToViewModel(article))
+            .toList());
+        loadingType = LoadingType.LOAD_MORE_DATA;
+      } else {
+        featuredNews.clear();
+        news =
+            _news.map((article) => convertArticleToViewModel(article)).toList();
 
-      news =
-          _news.map((article) => convertArticleToViewModel(article)).toList();
+        for (int i = 0; i < 3; i++) {
+          featuredNews.add(news[i]);
+          news.removeAt(i);
+        }
+      }
 
-      for (int i = 0; i < 3; i++) {
-        featuredNews.add(news[i]);
-        news.removeAt(i);
+      if (_news.isNotEmpty) {
+        loadingType = LoadingType.HAS_DATA;
+      } else {
+        loadingType = LoadingType.IS_EMPTY;
       }
     }
-
-    if (_news.isNotEmpty) {
-      loadingType = LoadingType.HAS_DATA;
-    } else {
-      loadingType = LoadingType.IS_EMPTY;
-    }
-
     notifyListeners();
   }
 
   void searchNews(String content, String language) async {
-    List<Article> _findedNews =
-        await newsRepository.searchNews(content, language);
-    findedNews = _findedNews
-        .map((article) => convertArticleToViewModel(article))
-        .toList();
+    List<Article>? _findedNews =
+        await newsRepository.searchNews(content, language).catchError((error) {
+      loadingType = LoadingType.HAS_ERROR;
+    });
+
+    print(_findedNews);
+    if (_findedNews != null) {
+      findedNews = _findedNews
+          .map((article) => convertArticleToViewModel(article))
+          .toList();
+      loadingType = LoadingType.IS_LOADING;
+      if (_findedNews.isEmpty) {
+        loadingType = LoadingType.IS_EMPTY;
+      } else {
+        loadingType = LoadingType.HAS_DATA;
+      }
+    }
 
     notifyListeners();
   }
