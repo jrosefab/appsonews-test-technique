@@ -101,11 +101,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ),
       child: Center(
         child: TextWidget(
-          content: article.title ?? "",
-          type: TextType.LARGE,
-          color: color,
-          isBold: true,
-        ),
+            content: article.title ?? "",
+            type: TextType.LARGE,
+            color: color,
+            isBold: true,
+            shadow: <Shadow>[
+              Shadow(
+                offset: Offset(2.0, 2.0),
+                blurRadius: 10.0,
+                color: Colors.black,
+              ),
+            ]),
       ),
     );
   }
@@ -118,11 +124,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
         const SizedBox(
           height: 20,
         ),
-        TextWidget(
-          content: article.content ?? "",
-          type: TextType.MEDIUM,
-          color: Colors.grey,
-        ),
+        article.content!.isEmpty
+            ? TextWidget(
+                content: article.title ?? "",
+                type: TextType.MEDIUM,
+                color: Colors.grey,
+              )
+            : TextWidget(
+                content: article.title ?? "",
+                type: TextType.MEDIUM,
+                color: Colors.grey,
+              ),
         const SizedBox(
           height: 30,
         ),

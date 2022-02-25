@@ -88,23 +88,35 @@ class _FeaturedArticleWidgetState extends State<FeaturedArticleWidget> {
           children: [
             Expanded(
               child: TextWidget(
-                content: widget.article.title ?? "",
-                type: TextType.MEDIUM,
-                maxLines: 2,
-                color: color,
-                overflow: true,
-                isBold: true,
-              ),
+                  content: widget.article.title ?? "",
+                  type: TextType.MEDIUM,
+                  maxLines: 2,
+                  color: color,
+                  overflow: true,
+                  isBold: true,
+                  shadow: <Shadow>[
+                    Shadow(
+                      offset: Offset(2.0, 2.0),
+                      blurRadius: 10.0,
+                      color: Colors.black,
+                    ),
+                  ]),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextWidget(
-                  content: "Lire plus",
-                  type: TextType.SMALL,
-                  color: color,
-                  isBold: true,
-                ),
+                    content: "Lire plus",
+                    type: TextType.SMALL,
+                    color: color,
+                    isBold: true,
+                    shadow: <Shadow>[
+                      Shadow(
+                        offset: Offset(2.0, 2.0),
+                        blurRadius: 10.0,
+                        color: Colors.black,
+                      ),
+                    ]),
                 Icon(
                   Icons.arrow_forward_sharp,
                   color: color,

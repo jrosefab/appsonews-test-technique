@@ -100,7 +100,7 @@ class _PageViewHandlerState extends State<PageViewHandler> {
         return true;
       }
     } else {
-      return false;
+      return true;
     }
   }
 

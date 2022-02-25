@@ -23,7 +23,7 @@ class Article {
         author = map['author'] ?? '',
         source = Source.fromMap(map['source']),
         urlToImage = map['urlToImage'] ??
-            'https://eic-immobilier.fr/wp-content/themes/realestate-7/images/no-image.png',
+            'https://firebasestorage.googleapis.com/v0/b/appsonews-app.appspot.com/o/not-found.png?alt=media&token=0881e21b-c82a-4187-8fda-3f78b65c4b66',
         publishedAt = map['publishedAt'],
         description = map['description'] ?? '',
         url = map['url'] ?? '',

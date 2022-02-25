@@ -13,7 +13,7 @@ class NewsRepositoryImpl extends NewsRepository {
     String url = AppUrl.TOP_HEAD_LINES_URL;
     return await Dio().get(url, queryParameters: {
       AppStrings.COUNTRY: country,
-      AppStrings.API_KEY: Environnement.API_KEY,
+      AppStrings.API_KEY: "f40097c5da6b4a7dae41c7f1372db5a0",
       AppStrings.PAGE_SIZE: "${AppStrings.DEFAULT_PAGE_SIZE}",
       AppStrings.PAGE: "$page",
     }).then((response) {
