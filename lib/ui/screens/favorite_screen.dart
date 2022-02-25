@@ -25,7 +25,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   }
 
   void clearFavorites() {
-    sharedPrefViewModel.clearFavorites();
     if (sharedPrefViewModel.favoriteNews.isNotEmpty) {
       showDialog<void>(
         context: context,

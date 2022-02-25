@@ -4,6 +4,7 @@ import 'package:appsonews/ui/styles/colors.dart';
 import 'package:appsonews/ui/viewmodels/article_view_model.dart';
 import 'package:appsonews/ui/widgets/favorite_icon_widget.dart';
 import 'package:appsonews/utils/constants/enum.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:appsonews/ui/widgets/text_widget.dart';
 import 'package:appsonews/utils/utils.dart';
@@ -97,7 +98,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 50),
       decoration: BoxDecoration(
         image: DecorationImage(
-            image: NetworkImage(article.urlToImage), fit: BoxFit.cover),
+            fit: BoxFit.cover,
+            image: CachedNetworkImageProvider(article.urlToImage)),
       ),
       child: Center(
         child: TextWidget(
